@@ -1,0 +1,92 @@
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>SHREE SHAKTI AMUL STOCK</title>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 10px; text-align: center; }
+    h2 { margin-bottom: 5px; }
+    .row { display: flex; justify-content: center; margin: 5px 0; }
+    .label { width: 180px; text-align: left; }
+    select { margin: 0 5px; }
+    button { margin: 10px; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; }
+    #saveBtn { background: #4CAF50; color: white; }
+    #resetBtn { background: #f44336; color: white; }
+  </style>
+</head>
+<body>
+
+  <h2>SHREE SHAKTI AMUL STOCK</h2>
+  <p id="date"></p>
+
+  <div id="products"></div>
+  <button id="saveBtn" onclick="saveStock()">Save Stock</button>
+  <button id="resetBtn" onclick="resetStock()">Reset</button>
+
+  <script>
+    // 👉 અહીં Firebase config paste કરવો
+    var firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      databaseURL: "https://YOUR_PROJECT_ID.firebaseio.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "SENDER_ID",
+      appId: "APP_ID"
+    };
+    firebase.initializeApp(firebaseConfig);
+    var db = firebase.database();
+
+    // 11 products list (તારા મુજબ)
+    var products = [
+      "ગોલ્ડ 500 ML","ચાઇ માજા 500 ML","T સ્પે 1 લી","છાસ 680 ML","છાસ 300 ML",
+      "મસ્તી 85 ગ્રામ","મસ્તી 200 ગ્રામ","મસ્તી 1kg","દહીં 800 ગ્રામ","મસ્તી 5 kg","ગોલ્ડ 6 લી"
+    ];
+
+    // Generate UI
+    let container = document.getElementById("products");
+    products.forEach(p => {
+      let div = document.createElement("div");
+      div.className = "row";
+      div.innerHTML = `
+        <div class="label">${p}</div>
+        <select id="${p}_carat">${[...Array(11).keys()].map(n=>`<option>${n}</option>`).join('')}</select>
+        <select id="${p}_piece">${[...Array(51).keys()].map(n=>`<option>${n}</option>`).join('')}</select>
+      `;
+      container.appendChild(div);
+    });
+
+    // Save stock to Firebase
+    function saveStock() {
+      let today = new Date().toISOString().split('T')[0]; // yyyy-mm-dd
+      let stockData = {};
+      products.forEach(p => {
+        stockData[p] = {
+          carat: document.getElementById(p+"_carat").value,
+          piece: document.getElementById(p+"_piece").value
+        };
+      });
+      db.ref("stock/"+today).set(stockData);
+      alert("✅ Stock Saved!");
+    }
+
+    // Reset stock values (without saving)
+    function resetStock() {
+      products.forEach(p => {
+        document.getElementById(p+"_carat").selectedIndex = 0;
+        document.getElementById(p+"_piece").selectedIndex = 0;
+      });
+      alert("♻️ Stock Reset (Not Saved)");
+    }
+
+    // Show date in DD/MM/YYYY
+    let d = new Date();
+    document.getElementById("date").innerText =
+      "Date: " + ("0"+d.getDate()).slice(-2) + "/" +
+      ("0"+(d.getMonth()+1)).slice(-2) + "/" +
+      d.getFullYear();
+  </script>
+</body>
+</html>
