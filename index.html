@@ -1,7 +1,8 @@
 <meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
-<html>
+<html lang="gu">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>SHREE SHAKTI AMUL STOCK</title>
 
   <!-- Firebase SDKs -->
@@ -10,17 +11,17 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
   <style>
-    body { font-family: Arial, sans-serif; padding: 12px; text-align: center; }
+    body { font-family: Arial, sans-serif; padding: 12px; text-align: center; background:#f9f9f9; }
     h2 { margin: 0 0 6px; color: red; }
-    #date { margin: 0 0 12px; }
-    .header-row { display: flex; justify-content: center; gap: 8px; margin: 6px 0; font-weight: bold; }
-    .row { display: flex; justify-content: center; align-items: center; gap: 8px; margin: 6px 0; color: black; }
+    #date { margin: 0 0 12px; font-weight: bold; }
+    .header-row { display: flex; justify-content: center; gap: 8px; margin: 10px 0 6px; font-weight: bold; color:#000; }
+    .row { display: flex; justify-content: center; align-items: center; gap: 8px; margin: 6px 0; color: #000; }
     .label { width: 220px; text-align: left; }
     select { padding: 4px; }
-    button { margin: 10px 6px; padding: 8px 16px; border: 0; border-radius: 8px; cursor: pointer; }
+    button { margin: 12px 6px; padding: 10px 18px; border: 0; border-radius: 8px; cursor: pointer; }
     #saveBtn { background: #4caf50; color: #fff; }
     #resetBtn { background: #f44336; color: #fff; }
-    #status { margin-top: 8px; font-size: 14px; }
+    #status { margin-top: 8px; font-size: 14px; min-height: 18px; }
   </style>
 </head>
 <body>
@@ -30,8 +31,8 @@
   <!-- Gujarati header row -->
   <div class="header-row">
     <div class="label">પ્રોડક્ટ</div>
-    <div style="width:60px;">કેરેટ</div>
-    <div style="width:60px;">નંગ</div>
+    <div style="width:70px;">કેરેટ</div>
+    <div style="width:70px;">નંગ</div>
   </div>
 
   <div id="products"></div>
@@ -41,7 +42,7 @@
   <div id="status"></div>
 
   <script>
-    // ✅ તમારી Firebase config અહીં પેસ્ટ કરો
+    // 🔧 તમારી Firebase config અહીં પેસ્ટ કરો (Firebase → Project Settings → General → Web app)
     var firebaseConfig = {
       apiKey: "YOUR_API_KEY",
       authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
@@ -55,13 +56,22 @@
     const auth = firebase.auth();
     const db   = firebase.database();
 
-    // Products
+    // 11 Products (તમે આપેલા)
     const products = [
-      "ગોલ્ડ 500 ML","ચાઇ માજા 500 ML","T સ્પે 1 લી","છાસ 680 ML","છાસ 300 ML",
-      "મસ્તી 85 ગ્રામ","મસ્તી 200 ગ્રામ","મસ્તી 1kg","દહીં 800 ગ્રામ","મસ્તી 5 kg","ગોલ્ડ 6 લી"
+      "ગોલ્ડ 500 ML",
+      "ચાઇ માજા 500 ML",
+      "T સ્પે 1 લી",
+      "છાસ 680 ML",
+      "છાસ 300 ML",
+      "મસ્તી 85 ગ્રામ",
+      "મસ્તી 200 ગ્રામ",
+      "મસ્તી 1kg",
+      "દહીં 800 ગ્રામ",
+      "મસ્તી 5 kg",
+      "ગોલ્ડ 6 લી"
     ];
 
-    // Build UI
+    // UI build
     const container = document.getElementById("products");
     products.forEach(p => {
       const row = document.createElement("div");
@@ -77,16 +87,14 @@
     // Date (DD/MM/YYYY) + path (YYYY-MM-DD)
     const d = new Date();
     const dateText = ("0"+d.getDate()).slice(-2)+"/"+("0"+(d.getMonth()+1)).slice(-2)+"/"+d.getFullYear();
-    document.getElementById("date").innerText = "તારીખ: " + dateText;
+    document.getElementById("date").innerText = dateText;
     const todayPath = d.toISOString().split("T")[0]; // YYYY-MM-DD
 
-    // Helper to make safe IDs
+    // Safe ids
     function cssId(name){ return name.replace(/\s+/g,'_').replace(/[^\w]/g,''); }
 
-    // 🔐 Anonymous sign-in, then attach real-time listener
-    auth.signInAnonymously().then(() => {
-      setStatus("Signed in (anonymous). Loading data...");
-      // Load existing values (and keep in sync live)
+    // Real-time listener attach (auth optional)
+    function attachListeners(){
       db.ref("stock/"+todayPath).on("value", snap => {
         const data = snap.val() || {};
         products.forEach(p => {
@@ -98,13 +106,15 @@
           pSel.value = String(saved.piece || 0);
         });
         setStatus("Live data synced.");
-      });
-    }).catch(err => {
-      console.error(err);
-      setStatus("Auth error: " + err.message);
-    });
+      }, err => setStatus("Read error: " + err.message));
+    }
 
-    // Save
+    // Try anonymous auth (silent). If it fails (e.g., public rules), still continue.
+    auth.signInAnonymously()
+      .then(() => { setStatus("Signed in (anonymous)."); attachListeners(); })
+      .catch(() => { setStatus("Auth skipped (public rules assumed)."); attachListeners(); });
+
+    // Save to DB
     function saveStock(){
       const payload = {};
       products.forEach(p => {
@@ -119,7 +129,7 @@
         .catch(e => setStatus("❌ Save failed: " + e.message));
     }
 
-    // Reset
+    // Reset (local only — DB માં લખાતું નથી)
     function resetStock(){
       products.forEach(p => {
         const base = cssId(p);
