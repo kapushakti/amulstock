@@ -1,145 +1,241 @@
-<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!doctype html>
+
 <html lang="gu">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>SHREE SHAKTI AMUL STOCK</title>
-
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gujarati:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: Arial, sans-serif; padding: 12px; text-align: center; background:#f9f9f9; }
-    h2 { margin: 0 0 6px; color: red; }
-    #date { margin: 0 0 12px; font-weight: bold; }
-    .header-row { display: flex; justify-content: center; gap: 8px; margin: 10px 0 6px; font-weight: bold; color:#000; }
-    .row { display: flex; justify-content: center; align-items: center; gap: 8px; margin: 6px 0; color: #000; }
-    .label { width: 220px; text-align: left; }
-    select { padding: 4px; }
-    button { margin: 12px 6px; padding: 10px 18px; border: 0; border-radius: 8px; cursor: pointer; }
-    #saveBtn { background: #4caf50; color: #fff; }
-    #resetBtn { background: #f44336; color: #fff; }
-    #status { margin-top: 8px; font-size: 14px; min-height: 18px; }
+    :root{
+      --bg:#0b1220; --card:#111a2b; --muted:#94a3b8; --accent:#22c55e; --danger:#ef4444; --text:#e2e8f0; --line:#1e293b;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:"Noto Sans Gujarati",system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Noto Sans",sans-serif;background:var(--bg);color:var(--text)}
+    .wrap{max-width:980px;margin:0 auto;padding:16px}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:0 6px 30px rgba(0,0,0,.25)}
+    .header{padding:20px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px}
+    h1{font-size:20px;letter-spacing:.5px;margin:0}
+    .date{font-weight:600;color:var(--accent)}
+    .controls{display:flex;gap:8px;flex-wrap:wrap}
+    button{appearance:none;border:0;border-radius:12px;padding:10px 14px;font-weight:700;cursor:pointer}
+    .save{background:var(--accent);color:#052e14}
+    .reset{background:var(--danger);color:#2b0b0b}
+    .status{font-size:12px;color:var(--muted);margin-left:8px;min-height:18px}
+    .table{width:100%;border-collapse:collapse}
+    thead th{position:sticky;top:0;background:var(--card);z-index:2}
+    th,td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left}
+    th{font-size:13px;color:#b6c2d9;text-transform:uppercase;letter-spacing:.06em}
+    td label{display:block}
+    select{width:100%;background:#0b1629;color:#e2e8f0;border:1px solid #263247;padding:8px;border-radius:10px}
+    .pcol{width:60%}
+    .ccol,.ncol{width:20%}
+    @media (max-width:680px){
+      .pcol{width:auto}
+      th:nth-child(2), th:nth-child(3){width:110px}
+    }
+    .footer{padding:10px 14px;color:var(--muted);font-size:12px}
+    .badge{display:inline-block;padding:2px 8px;border-radius:999px;background:#0f172a;border:1px solid #243045;color:#7aa2ff;margin-left:8px;font-size:11px}
   </style>
 </head>
 <body>
-  <h2>SHREE SHAKTI AMUL STOCK</h2>
-  <p id="date"></p>
-
-  <!-- Gujarati header row -->
-  <div class="header-row">
-    <div class="label">પ્રોડક્ટ</div>
-    <div style="width:70px;">કેરેટ</div>
-    <div style="width:70px;">નંગ</div>
+  <div class="wrap">
+    <div class="card">
+      <div class="header">
+        <div>
+          <h1>SHREE SHAKTI AMUL STOCK <span class="badge">વેબ</span></h1>
+          <div class="status" id="status">લોડ થઈ રહ્યું છે…</div>
+        </div>
+        <div style="text-align:right">
+          <div class="date" id="dateLabel">તારીખ: --</div>
+          <div class="controls">
+            <button class="save" id="saveBtn">SAVE</button>
+            <button class="reset" id="resetBtn">RESET</button>
+          </div>
+        </div>
+      </div><div style="overflow:auto">
+    <table class="table" id="stockTable">
+      <thead>
+        <tr>
+          <th class="pcol">પ્રોડક્ટ્સ</th>
+          <th class="ccol">કેરેટ</th>
+          <th class="ncol">નંગ</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
   </div>
 
-  <div id="products"></div>
+  <div class="footer">
+    • ત્રણેય વ્યક્તિઓ માટે રિયલટાઇમ સિંક. • ઑફલાઇન સપોર્ટ. • બીજી તારીખે નવો સ્ટોક માટે RESET દબાવો.
+  </div>
+</div>
 
-  <button id="saveBtn" onclick="saveStock()">Save Stock</button>
-  <button id="resetBtn" onclick="resetStock()">Reset</button>
-  <div id="status"></div>
+  </div><script type="module">
+  // ====== 1) CONFIG – તમારા પ્રોજેક્ટ માટે અપડેટ કર્યું છે ======
+  const FIREBASE_CONFIG = {
+    apiKey: "AIzaSyAvmNdKnVDqciXWN-fASQ77b9ovdamaM7k",
+    authDomain: "amul-stock.firebaseapp.com",
+    projectId: "amul-stock",
+    storageBucket: "amul-stock.firebasestorage.app",
+    messagingSenderId: "721564107787",
+    appId: "1:721564107787:web:d2e305a47e0a8becae730e"
+  };
 
-  <script>
-    // 🔧 તમારી Firebase config અહીં પેસ્ટ કરો (Firebase → Project Settings → General → Web app)
-    var firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-      databaseURL: "https://YOUR_PROJECT_ID.firebaseio.com",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_PROJECT_ID.appspot.com",
-      messagingSenderId: "SENDER_ID",
-      appId: "APP_ID"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db   = firebase.database();
+  // ====== 2) PRODUCT LIST (Gujarati) ======
+  const PRODUCTS = [
+    "ગોલ્ડ 500 ML",
+    "ચાઇ માઝા 500 ML",
+    "T સ્પે 1 LTR",
+    "છાસ 300 ML",
+    "છાસ 680 ML",
+    "દહીં 850 GM",
+    "મસ્તી 1 KG",
+    "મસ્તી 200 GM",
+    "મસ્તી 85 GM",
+    "મસ્તી 5 KG",
+    "ગોલ્ડ 6 LTR"
+  ];
 
-    // 11 Products (તમે આપેલા)
-    const products = [
-      "ગોલ્ડ 500 ML",
-      "ચાઇ માજા 500 ML",
-      "T સ્પે 1 લી",
-      "છાસ 680 ML",
-      "છાસ 300 ML",
-      "મસ્તી 85 ગ્રામ",
-      "મસ્તી 200 ગ્રામ",
-      "મસ્તી 1kg",
-      "દહીં 800 ગ્રામ",
-      "મસ્તી 5 kg",
-      "ગોલ્ડ 6 લી"
-    ];
+  // ====== 3) FIREBASE (Web v11+ Modular via CDN) ======
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
+  import { getFirestore, doc, setDoc, updateDoc, getDoc, onSnapshot, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
 
-    // UI build
-    const container = document.getElementById("products");
-    products.forEach(p => {
-      const row = document.createElement("div");
-      row.className = "row";
-      row.innerHTML = `
-        <div class="label">${p}</div>
-        <select id="${cssId(p)}_crate">${[...Array(11).keys()].map(n=>`<option>${n}</option>`).join('')}</select>
-        <select id="${cssId(p)}_piece">${[...Array(51).keys()].map(n=>`<option>${n}</option>`).join('')}</select>
-      `;
-      container.appendChild(row);
+  const app = initializeApp(FIREBASE_CONFIG);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  // Offline cache (works in modern browsers)
+  try { await enableIndexedDbPersistence(db); } catch(e) { console.warn('Persistence:', e.message); }
+
+  // ====== 4) UTIL ======
+  const pad2 = n => n.toString().padStart(2, '0');
+  const todayISO = () => {
+    // Force Asia/Kolkata date (UTC+5:30)
+    const now = new Date();
+    const ist = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+    const y = ist.getFullYear(); const m = pad2(ist.getMonth()+1); const d = pad2(ist.getDate());
+    return `${y}-${m}-${d}`;
+  };
+  const humanDate = () => {
+    const now = new Date();
+    const ist = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+    return `${pad2(ist.getDate())}-${pad2(ist.getMonth()+1)}-${ist.getFullYear()}`;
+  };
+
+  const dateKey = todayISO();
+  document.getElementById('dateLabel').textContent = `તારીખ: ${humanDate()}`;
+
+  const $tbody = document.getElementById('tbody');
+  const $status = document.getElementById('status');
+  const $save = document.getElementById('saveBtn');
+  const $reset = document.getElementById('resetBtn');
+
+  // Build UI rows
+  const caratOptions = Array.from({length: 11}, (_,i)=>`<option value="${i}">${pad2(i)}</option>`).join('');
+  const numberOptions = Array.from({length: 51}, (_,i)=>`<option value="${i}">${pad2(i)}</option>`).join('');
+
+  function slug(name){ return name.replace(/\s+/g,'_').replace(/[^\p{L}\p{N}_-]/gu,''); }
+
+  PRODUCTS.forEach(name => {
+    const id = slug(name);
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="pcol"><label for="c_${id}">${name}</label></td>
+      <td class="ccol"><select id="c_${id}" data-name="${name}" data-kind="carat">${caratOptions}</select></td>
+      <td class="ncol"><select id="n_${id}" data-name="${name}" data-kind="number">${numberOptions}</select></td>
+    `;
+    $tbody.appendChild(tr);
+  });
+
+  // Local state
+  let state = Object.fromEntries(PRODUCTS.map(p => [p, {carat:0, number:0}]));
+  let applyingRemote = false;
+
+  // Read/subscribe today's doc
+  const docRef = doc(db, 'stocks', dateKey);
+
+  async function ensureDoc() {
+    const snap = await getDoc(docRef);
+    if (!snap.exists()) {
+      await setDoc(docRef, { products: state, date: dateKey, createdAt: new Date() });
+    } else {
+      state = snap.data().products || state;
+    }
+    applyStateToUI();
+  }
+
+  function applyStateToUI(){
+    applyingRemote = true;
+    for (const name of PRODUCTS){
+      const id = slug(name);
+      const cSel = document.getElementById(`c_${id}`);
+      const nSel = document.getElementById(`n_${id}`);
+      const {carat, number} = state[name] || {carat:0, number:0};
+      if (cSel) cSel.value = String(carat);
+      if (nSel) nSel.value = String(number);
+    }
+    applyingRemote = false;
+  }
+
+  async function saveState(partial){
+    // Merge and save
+    if (partial) {
+      for (const [name, obj] of Object.entries(partial)){
+        state[name] = { ...state[name], ...obj };
+      }
+    }
+    await setDoc(docRef, { products: state, date: dateKey, updatedAt: new Date() }, { merge: true });
+    setStatus('સેવ થઈ ગયું ✅');
+  }
+
+  function setStatus(msg){ $status.textContent = msg; clearTimeout(setStatus._t); setStatus._t = setTimeout(()=>{ $status.textContent=''; }, 2500); }
+
+  // Change handlers (debounced)
+  let t;
+  $tbody.addEventListener('change', (e)=>{
+    if (!(e.target instanceof HTMLSelectElement)) return;
+    if (applyingRemote) return;
+    const el = e.target; const name = el.dataset.name; const kind = el.dataset.kind; const val = parseInt(el.value,10)||0;
+    const delta = { [name]: { [kind]: val } };
+    setStatus('સેવ થઈ રહ્યું છે…');
+    clearTimeout(t); t = setTimeout(()=> saveState(delta).catch(console.error), 200);
+  });
+
+  // Buttons
+  $save.addEventListener('click', ()=> saveState().catch(console.error));
+
+  $reset.addEventListener('click', async ()=>{
+    if (!confirm('આજે માટે બધું 00 કરવા RESET કરશો?')) return;
+    state = Object.fromEntries(PRODUCTS.map(p => [p, {carat:0, number:0}]));
+    applyStateToUI();
+    await saveState();
+  });
+
+  // Auth → subscribe
+  onAuthStateChanged(auth, async (user)=>{
+    if (!user) {
+      await signInAnonymously(auth);
+      return;
+    }
+    // Ensure doc and start realtime listener
+    await ensureDoc();
+    setStatus('રીયલટાઇમ જોડાયેલ ✅');
+
+    onSnapshot(docRef, (snap)=>{
+      if (!snap.exists()) return;
+      const incoming = snap.data().products || {};
+      // If remote diff, apply
+      const changed = JSON.stringify(incoming) !== JSON.stringify(state);
+      if (changed){
+        state = incoming;
+        applyStateToUI();
+        setStatus('અપડેટ થયું 🔄');
+      }
     });
-
-    // Date (DD/MM/YYYY) + path (YYYY-MM-DD)
-    const d = new Date();
-    const dateText = ("0"+d.getDate()).slice(-2)+"/"+("0"+(d.getMonth()+1)).slice(-2)+"/"+d.getFullYear();
-    document.getElementById("date").innerText = dateText;
-    const todayPath = d.toISOString().split("T")[0]; // YYYY-MM-DD
-
-    // Safe ids
-    function cssId(name){ return name.replace(/\s+/g,'_').replace(/[^\w]/g,''); }
-
-    // Real-time listener attach (auth optional)
-    function attachListeners(){
-      db.ref("stock/"+todayPath).on("value", snap => {
-        const data = snap.val() || {};
-        products.forEach(p => {
-          const base = cssId(p);
-          const cSel = document.getElementById(base+"_crate");
-          const pSel = document.getElementById(base+"_piece");
-          const saved = data[p] || { crate: 0, piece: 0 };
-          cSel.value = String(saved.crate || 0);
-          pSel.value = String(saved.piece || 0);
-        });
-        setStatus("Live data synced.");
-      }, err => setStatus("Read error: " + err.message));
-    }
-
-    // Try anonymous auth (silent). If it fails (e.g., public rules), still continue.
-    auth.signInAnonymously()
-      .then(() => { setStatus("Signed in (anonymous)."); attachListeners(); })
-      .catch(() => { setStatus("Auth skipped (public rules assumed)."); attachListeners(); });
-
-    // Save to DB
-    function saveStock(){
-      const payload = {};
-      products.forEach(p => {
-        const base = cssId(p);
-        payload[p] = {
-          crate: Number(document.getElementById(base+"_crate").value),
-          piece: Number(document.getElementById(base+"_piece").value)
-        };
-      });
-      db.ref("stock/"+todayPath).set(payload)
-        .then(()=> setStatus("✅ Stock Saved"))
-        .catch(e => setStatus("❌ Save failed: " + e.message));
-    }
-
-    // Reset (local only — DB માં લખાતું નથી)
-    function resetStock(){
-      products.forEach(p => {
-        const base = cssId(p);
-        document.getElementById(base+"_crate").value = "0";
-        document.getElementById(base+"_piece").value = "0";
-      });
-      setStatus("♻️ Reset (Not saved)");
-    }
-
-    function setStatus(msg){ document.getElementById("status").innerText = msg; }
-  </script>
-</body>
+  });
+</script></body>
 </html>
