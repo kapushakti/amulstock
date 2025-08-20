@@ -45,7 +45,7 @@
     <div class="card">
       <div class="header">
         <div>
-          <h1>SHREE SHAKTI AMUL STOCK <span class="badge">વેબ</span></h1>
+          <h1>SHREE SHAKTI AMUL STOCK <span class="badge"></span></h1>
           <div class="status" id="status">લોડ થઈ રહ્યું છે…</div>
         </div>
         <div style="text-align:right">
@@ -69,7 +69,6 @@
   </div>
 
   <div class="footer">
-    • ત્રણેય વ્યક્તિઓ માટે રિયલટાઇમ સિંક. • ઑફલાઇન સપોર્ટ. • બીજી તારીખે નવો સ્ટોક માટે RESET દબાવો.
   </div>
 </div>
 
@@ -239,3 +238,34 @@
   });
 </script></body>
 </html>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAvmNdKnVDqciXWN-fASQ77b9ovdamaM7k",
+    authDomain: "amul-stock.firebaseapp.com",
+    projectId: "amul-stock",
+    storageBucket: "amul-stock.firebasestorage.app",
+    messagingSenderId: "721564107787",
+    appId: "1:721564107787:web:d2e305a47e0a8becae730e"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // Save Button Event
+  document.getElementById("saveBtn").addEventListener("click", async () => {
+    let caret = document.getElementById("caret").value;
+    let nang = document.getElementById("nang").value;
+
+    await setDoc(doc(db, "stock", "today"), {
+      date: new Date().toLocaleDateString(),
+      products: {
+        milk: { caret: caret, nang: nang }
+      }
+    });
+
+    alert("Saved Successfully!");
+  });
+</script>
