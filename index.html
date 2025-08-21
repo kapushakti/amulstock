@@ -1,5 +1,4 @@
 <!doctype html>
-
 <html lang="gu">
 <head>
   <meta charset="utf-8" />
@@ -31,13 +30,34 @@
     td label{display:block}
     select{width:100%;background:#0b1629;color:#e2e8f0;border:1px solid #263247;padding:8px;border-radius:10px}
     
-    /* ===== અહીં ફેરફાર કરેલ છે ===== */
+    /* ===== અહીંથી કોડ બદલેલ છે ===== */
     .pcol { width: auto; }
-    .ccol, .ncol { width: 120px; }
-    @media (max-width:680px){
-      /* આ વિભાગ હવે ખાલી રાખી શકાય છે */
+    .ccol, .ncol { width: 100px; } 
+
+    /* મોબાઇલ સ્ક્રીન માટે ખાસ ફેરફાર */
+    @media (max-width: 680px) {
+      .wrap { padding: 8px; } /* આખી એપની આસપાસની જગ્યા ઓછી કરી */
+      
+      .header { padding: 12px 10px; } /* હેડરનો ખાલી ભાગ ઓછો કર્યો */
+      h1 { font-size: 16px; } /* મથાળાને થોડું નાનું કર્યું */
+
+      /* ટેબલને કોમ્પેક્ટ બનાવવા માટે */
+      th, td { padding: 6px 8px; } /* ટેબલની દરેક લાઈનને પાતળી કરી */
+      th { font-size: 12px; }
+
+      /* ડ્રોપડાઉન બોક્સને નાના કર્યા */
+      select { 
+        padding: 5px; 
+        font-size: 14px;
+      }
+
+      /* બટનને નાના કર્યા */
+      button { padding: 8px 12px; }
+
+      /* ફૂટરની જગ્યા ઓછી કરી */
+      .footer { padding: 8px 10px; font-size: 11px; }
     }
-    /* ============================== */
+    /* ===== અહીં કોડ પૂરો ===== */
 
     .footer{padding:10px 14px;color:var(--muted);font-size:12px}
     .badge{display:inline-block;padding:2px 8px;border-radius:999px;background:#0f172a;border:1px solid #243045;color:#7aa2ff;margin-left:8px;font-size:11px}
@@ -185,13 +205,27 @@
   }
 
   async function saveState(partial){
-    // Merge and save
+    // જો ફક્ત એક જ વેલ્યુ બદલાઈ હોય (partial update)
     if (partial) {
+      const updates = {};
       for (const [name, obj] of Object.entries(partial)){
+        // લોકલ state અપડેટ કરો
         state[name] = { ...state[name], ...obj };
+        // updateDoc માટે પાથ તૈયાર કરો
+        for (const [kind, value] of Object.entries(obj)){
+          updates[`products.${name}.${kind}`] = value;
+        }
       }
+      updates.updatedAt = new Date(); // અપડેટનો સમય ઉમેરો
+      await updateDoc(docRef, updates);
+    } 
+    // જો RESET કે SAVE બટનથી આખું state સેવ કરવાનું હોય
+    else {
+      await updateDoc(docRef, {
+        products: state,
+        updatedAt: new Date()
+      });
     }
-    await setDoc(docRef, { products: state, date: dateKey, updatedAt: new Date() }, { merge: true });
     setStatus('સેવ થઈ ગયું ✅');
   }
 
@@ -242,4 +276,3 @@
   });
 </script></body>
 </html>
-```આ ફેરફાર પછી 'કેરેટ' અને 'નંગ' ના બોક્સ મોટા દેખાશે અને તેમાં બે અંકો પણ સ્પષ્ટપણે દેખાશે.
