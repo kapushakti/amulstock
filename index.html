@@ -1,4 +1,4 @@
-<meta name='viewport' content='width=device-width, initial-scale=1'/><!doctype html>
+<!doctype html>
 
 <html lang="gu">
 <head>
@@ -30,12 +30,15 @@
     th{font-size:13px;color:#b6c2d9;text-transform:uppercase;letter-spacing:.06em}
     td label{display:block}
     select{width:100%;background:#0b1629;color:#e2e8f0;border:1px solid #263247;padding:8px;border-radius:10px}
-    .pcol{width:60%}
-    .ccol,.ncol{width:20%}
+    
+    /* ===== અહીં ફેરફાર કરેલ છે ===== */
+    .pcol { width: auto; }
+    .ccol, .ncol { width: 120px; }
     @media (max-width:680px){
-      .pcol{width:auto}
-      th:nth-child(2), th:nth-child(3){width:110px}
+      /* આ વિભાગ હવે ખાલી રાખી શકાય છે */
     }
+    /* ============================== */
+
     .footer{padding:10px 14px;color:var(--muted);font-size:12px}
     .badge{display:inline-block;padding:2px 8px;border-radius:999px;background:#0f172a;border:1px solid #243045;color:#7aa2ff;margin-left:8px;font-size:11px}
   </style>
@@ -45,7 +48,7 @@
     <div class="card">
       <div class="header">
         <div>
-          <h1>SHREE SHAKTI AMUL STOCK <span class="badge"></span></h1>
+          <h1>SHREE SHAKTI AMUL STOCK <span class="badge">વેબ</span></h1>
           <div class="status" id="status">લોડ થઈ રહ્યું છે…</div>
         </div>
         <div style="text-align:right">
@@ -69,6 +72,7 @@
   </div>
 
   <div class="footer">
+    • ત્રણેય વ્યક્તિઓ માટે રિયલટાઇમ સિંક. • ઑફલાઇન સપોર્ટ. • બીજી તારીખે નવો સ્ટોક માટે RESET દબાવો.
   </div>
 </div>
 
@@ -238,34 +242,4 @@
   });
 </script></body>
 </html>
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyAvmNdKnVDqciXWN-fASQ77b9ovdamaM7k",
-    authDomain: "amul-stock.firebaseapp.com",
-    projectId: "amul-stock",
-    storageBucket: "amul-stock.firebasestorage.app",
-    messagingSenderId: "721564107787",
-    appId: "1:721564107787:web:d2e305a47e0a8becae730e"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-
-  // Save Button Event
-  document.getElementById("saveBtn").addEventListener("click", async () => {
-    let caret = document.getElementById("caret").value;
-    let nang = document.getElementById("nang").value;
-
-    await setDoc(doc(db, "stock", "today"), {
-      date: new Date().toLocaleDateString(),
-      products: {
-        milk: { caret: caret, nang: nang }
-      }
-    });
-
-    alert("Saved Successfully!");
-  });
-</script>
+```આ ફેરફાર પછી 'કેરેટ' અને 'નંગ' ના બોક્સ મોટા દેખાશે અને તેમાં બે અંકો પણ સ્પષ્ટપણે દેખાશે.
