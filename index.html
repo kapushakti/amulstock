@@ -8,16 +8,15 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gujarati:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    /* ===== અહીંથી કોડ બદલેલ છે ===== */
     :root{
       /* નવી લાઈટ થીમ */
-      --bg:#f8fafc;       /* આખી એપ માટે આછો ગ્રે બેકગ્રાઉન્ડ */
-      --card:#ffffff;     /* કાર્ડ માટે સફેદ બેકગ્રાઉન્ડ */
-      --muted:#64748b;     /* હેડિંગ માટે ડાર્ક ગ્રે કલર */
-      --accent:#22c55e;     /* લીલો કલર (SAVE બટન) */
-      --danger:#ef4444;     /* લાલ કલર (RESET બટન અને મથાળું) */
-      --text:#1e293b;       /* મુખ્ય અક્ષરો માટે ડાર્ક કલર */
-      --line:#e2e8f0;       /* લાઈનો માટે આછો ગ્રે કલર */
+      --bg:#f8fafc;
+      --card:#ffffff;
+      --muted:#64748b;
+      --accent:#22c55e;
+      --danger:#ef4444;
+      --text:#1e293b;
+      --line:#e2e8f0;
     }
     *{box-sizing:border-box}
     body{
@@ -25,7 +24,7 @@
       font-family:"Noto Sans Gujarati",system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Noto Sans",sans-serif;
       background:var(--bg);
       color:var(--text);
-      font-weight: 600; /* મોટાભાગના અક્ષરોને ઘાટા (Bold) કર્યા */
+      font-weight: 600;
     }
     .wrap{max-width:980px;margin:0 auto;padding:16px}
     .card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:0 6px 30px rgba(0,0,0,.1)}
@@ -34,15 +33,19 @@
       font-size:20px;
       letter-spacing:.5px;
       margin:0;
-      color: var(--danger); /* મથાળાને લાલ કલર આપ્યો */
-      font-weight: 700;   /* મથાળાને વધુ ઘાટું કર્યું */
+      color: var(--danger);
+      font-weight: 700;
     }
-    .date{font-weight:600;color:var(--accent)}
+    
+    /* ===== અહીં ફેરફાર કરેલ છે ===== */
+    .date{font-weight:600;color:var(--text)}
+    .status{font-size:12px;color:var(--text);margin-left:8px;min-height:18px}
+    /* ============================== */
+
     .controls{display:flex;gap:8px;flex-wrap:wrap}
     button{appearance:none;border:0;border-radius:12px;padding:10px 14px;font-weight:700;cursor:pointer}
-    .save{background:var(--accent);color:#ffffff} /* સેવ બટનના અક્ષર સફેદ કર્યા */
-    .reset{background:var(--danger);color:#ffffff} /* રીસેટ બટનના અક્ષર સફેદ કર્યા */
-    .status{font-size:12px;color:var(--muted);margin-left:8px;min-height:18px}
+    .save{background:var(--accent);color:#ffffff}
+    .reset{background:var(--danger);color:#ffffff}
     .table{width:100%;border-collapse:collapse}
     thead th{position:sticky;top:0;background:var(--card);z-index:2}
     th,td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left}
@@ -50,12 +53,12 @@
     td label{display:block}
     select{
       width:100%;
-      background: #f1f5f9; /* ડ્રોપડાઉનનો બેકગ્રાઉન્ડ બદલ્યો */
-      color: var(--text);   /* ડ્રોપડાઉનના અક્ષર ડાર્ક કર્યા */
-      border: 1px solid var(--line); /* ડ્રોપડાઉનની બોર્ડર બદલી */
+      background: #f1f5f9;
+      color: var(--text);
+      border: 1px solid var(--line);
       padding:8px;
       border-radius:10px;
-      font-weight: 600; /* ડ્રોપડાઉનના અક્ષર પણ ઘાટા કર્યા */
+      font-weight: 600;
     }
     .pcol { width: auto; }
     .ccol, .ncol { width: 100px; } 
@@ -72,7 +75,6 @@
     }
     .footer{padding:10px 14px;color:var(--muted);font-size:12px}
     .badge{display:inline-block;padding:2px 8px;border-radius:999px;background:#eef2ff;border:1px solid #dbeafe;color:#4338ca;margin-left:8px;font-size:11px}
-    /* ============================== */
   </style>
 </head>
 <body>
@@ -80,7 +82,8 @@
     <div class="card">
       <div class="header">
         <div>
-          <h1>SHREE SHAKTI AMUL STOCK <span class="badge">વેબ</span></h1>
+          <!-- ===== અહીં ફેરફાર કરેલ છે ===== -->
+          <h1>SHREE SHAKTI AMUL STOCK</h1>
           <div class="status" id="status">લોડ થઈ રહ્યું છે…</div>
         </div>
         <div style="text-align:right">
@@ -284,18 +287,4 @@
       }
       
       const incomingProducts = snap.data().products || {};
-      state = incomingProducts; // હંમેશા સર્વરમાંથી આવતા ડેટાને પ્રાધાન્ય આપો
-      applyStateToUI(); // UI ને નવા ડેટા સાથે અપડેટ કરો
-
-      if (isFirstLoad) {
-        isFirstLoad = false;
-      } else {
-        setStatus('અપડેટ થયું 🔄');
-      }
-    }, (error) => {
-      console.error("Snapshot listener error:", error);
-      setStatus('રીયલટાઇમ કનેક્શન તૂટ્યું ❌');
-    });
-  });
-</script></body>
-</html>
+      st
