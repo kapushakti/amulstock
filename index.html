@@ -36,16 +36,12 @@
       color: var(--danger);
       font-weight: 700;
     }
-    
-    /* ===== અહીં ફેરફાર કરેલ છે ===== */
     .date{font-weight:600;color:var(--text)}
-    .status{font-size:12px;color:var(--text);margin-left:8px;min-height:18px}
-    /* ============================== */
-
     .controls{display:flex;gap:8px;flex-wrap:wrap}
     button{appearance:none;border:0;border-radius:12px;padding:10px 14px;font-weight:700;cursor:pointer}
     .save{background:var(--accent);color:#ffffff}
     .reset{background:var(--danger);color:#ffffff}
+    .status{font-size:12px;color:var(--text);margin-left:8px;min-height:18px}
     .table{width:100%;border-collapse:collapse}
     thead th{position:sticky;top:0;background:var(--card);z-index:2}
     th,td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left}
@@ -71,10 +67,8 @@
       th { font-size: 12px; }
       select { padding: 5px; font-size: 14px; }
       button { padding: 8px 12px; }
-      .footer { padding: 8px 10px; font-size: 11px; }
     }
-    .footer{padding:10px 14px;color:var(--muted);font-size:12px}
-    .badge{display:inline-block;padding:2px 8px;border-radius:999px;background:#eef2ff;border:1px solid #dbeafe;color:#4338ca;margin-left:8px;font-size:11px}
+    .footer{padding:10px 14px;color:var(--muted);font-size:12px; border-top: 1px solid var(--line);}
   </style>
 </head>
 <body>
@@ -82,7 +76,6 @@
     <div class="card">
       <div class="header">
         <div>
-          <!-- ===== અહીં ફેરફાર કરેલ છે ===== -->
           <h1>SHREE SHAKTI AMUL STOCK</h1>
           <div class="status" id="status">લોડ થઈ રહ્યું છે…</div>
         </div>
@@ -93,198 +86,167 @@
             <button class="reset" id="resetBtn">RESET</button>
           </div>
         </div>
-      </div><div style="overflow:auto">
-    <table class="table" id="stockTable">
-      <thead>
-        <tr>
-          <th class="pcol">પ્રોડક્ટ્સ</th>
-          <th class="ccol">કેરેટ</th>
-          <th class="ncol">નંગ</th>
-        </tr>
-      </thead>
-      <tbody id="tbody"></tbody>
-    </table>
+      </div>
+      <div style="overflow:auto">
+        <table class="table" id="stockTable">
+          <thead>
+            <tr>
+              <th class="pcol">પ્રોડક્ટ્સ</th>
+              <th class="ccol">કેરેટ</th>
+              <th class="ncol">નંગ</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+      <div class="footer">
+      </div>
+    </div>
   </div>
+  
+  <script type="module">
+    // ====== 1) CONFIG – તમારા પ્રોજેક્ટ માટે અપડેટ કર્યું છે ======
+    const FIREBASE_CONFIG = {
+      apiKey: "AIzaSyAvmNdKnVDqciXWN-fASQ77b9ovdamaM7k",
+      authDomain: "amul-stock.firebaseapp.com",
+      projectId: "amul-stock",
+      storageBucket: "amul-stock.firebasestorage.app",
+      messagingSenderId: "721564107787",
+      appId: "1:721564107787:web:d2e305a47e0a8becae730e"
+    };
 
-  <div class="footer">
-    • ત્રણેય વ્યક્તિઓ માટે રિયલટાઇમ સિંક. • ઑફલાઇન સપોર્ટ. • બીજી તારીખે નવો સ્ટોક માટે RESET દબાવો.
-  </div>
-</div>
+    // ====== 2) PRODUCT LIST (Gujarati) ======
+    const PRODUCTS = [
+      "ગોલ્ડ 500 ML", "ચાઇ માઝા 500 ML", "T સ્પે 1 LTR", "છાસ 300 ML", "છાસ 680 ML",
+      "દહીં 850 GM", "મસ્તી 1 KG", "મસ્તી 200 GM", "મસ્તી 85 GM", "મસ્તી 5 KG", "ગોલ્ડ 6 LTR"
+    ];
 
-  </div><script type="module">
-  // ====== 1) CONFIG – તમારા પ્રોજેક્ટ માટે અપડેટ કર્યું છે ======
-  const FIREBASE_CONFIG = {
-    apiKey: "AIzaSyAvmNdKnVDqciXWN-fASQ77b9ovdamaM7k",
-    authDomain: "amul-stock.firebaseapp.com",
-    projectId: "amul-stock",
-    storageBucket: "amul-stock.firebasestorage.app",
-    messagingSenderId: "721564107787",
-    appId: "1:721564107787:web:d2e305a47e0a8becae730e"
-  };
+    // ====== 3) FIREBASE (Web v11+ Modular via CDN) ======
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, updateDoc, getDoc, onSnapshot, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
 
-  // ====== 2) PRODUCT LIST (Gujarati) ======
-  const PRODUCTS = [
-    "ગોલ્ડ 500 ML",
-    "ચાઇ માઝા 500 ML",
-    "T સ્પે 1 LTR",
-    "છાસ 300 ML",
-    "છાસ 680 ML",
-    "દહીં 850 GM",
-    "મસ્તી 1 KG",
-    "મસ્તી 200 GM",
-    "મસ્તી 85 GM",
-    "મસ્તી 5 KG",
-    "ગોલ્ડ 6 LTR"
-  ];
+    const app = initializeApp(FIREBASE_CONFIG);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-  // ====== 3) FIREBASE (Web v11+ Modular via CDN) ======
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
-  import { getAuth, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
-  import { getFirestore, doc, setDoc, updateDoc, getDoc, onSnapshot, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+    try { await enableIndexedDbPersistence(db); } catch(e) { console.warn('Persistence:', e.message); }
 
-  const app = initializeApp(FIREBASE_CONFIG);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
+    // ====== 4) UTIL ======
+    const pad2 = n => n.toString().padStart(2, '0');
+    const todayISO = () => {
+      const now = new Date();
+      const ist = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+      return `${ist.getFullYear()}-${pad2(ist.getMonth()+1)}-${pad2(ist.getDate())}`;
+    };
+    const humanDate = () => {
+      const now = new Date();
+      const ist = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+      return `${pad2(ist.getDate())}-${pad2(ist.getMonth()+1)}-${ist.getFullYear()}`;
+    };
 
-  // Offline cache (works in modern browsers)
-  try { await enableIndexedDbPersistence(db); } catch(e) { console.warn('Persistence:', e.message); }
+    const dateKey = todayISO();
+    document.getElementById('dateLabel').textContent = `તારીખ: ${humanDate()}`;
 
-  // ====== 4) UTIL ======
-  const pad2 = n => n.toString().padStart(2, '0');
-  const todayISO = () => {
-    // Force Asia/Kolkata date (UTC+5:30)
-    const now = new Date();
-    const ist = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
-    const y = ist.getFullYear(); const m = pad2(ist.getMonth()+1); const d = pad2(ist.getDate());
-    return `${y}-${m}-${d}`;
-  };
-  const humanDate = () => {
-    const now = new Date();
-    const ist = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
-    return `${pad2(ist.getDate())}-${pad2(ist.getMonth()+1)}-${ist.getFullYear()}`;
-  };
+    const $tbody = document.getElementById('tbody');
+    const $status = document.getElementById('status');
 
-  const dateKey = todayISO();
-  document.getElementById('dateLabel').textContent = `તારીખ: ${humanDate()}`;
+    // Build UI rows
+    const caratOptions = Array.from({length: 11}, (_,i)=>`<option value="${i}">${pad2(i)}</option>`).join('');
+    const numberOptions = Array.from({length: 51}, (_,i)=>`<option value="${i}">${pad2(i)}</option>`).join('');
 
-  const $tbody = document.getElementById('tbody');
-  const $status = document.getElementById('status');
-  const $save = document.getElementById('saveBtn');
-  const $reset = document.getElementById('resetBtn');
+    PRODUCTS.forEach(name => {
+      const id = name.replace(/\s+/g,'_').replace(/[^\p{L}\p{N}_-]/gu,'');
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td class="pcol"><label for="c_${id}">${name}</label></td>
+        <td class="ccol"><select id="c_${id}" data-name="${name}" data-kind="carat">${caratOptions}</select></td>
+        <td class="ncol"><select id="n_${id}" data-name="${name}" data-kind="number">${numberOptions}</select></td>
+      `;
+      $tbody.appendChild(tr);
+    });
 
-  // Build UI rows
-  const caratOptions = Array.from({length: 11}, (_,i)=>`<option value="${i}">${pad2(i)}</option>`).join('');
-  const numberOptions = Array.from({length: 51}, (_,i)=>`<option value="${i}">${pad2(i)}</option>`).join('');
+    let state = Object.fromEntries(PRODUCTS.map(p => [p, {carat:0, number:0}]));
+    let applyingRemote = false;
+    const docRef = doc(db, 'stocks', dateKey);
 
-  function slug(name){ return name.replace(/\s+/g,'_').replace(/[^\p{L}\p{N}_-]/gu,''); }
-
-  PRODUCTS.forEach(name => {
-    const id = slug(name);
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td class="pcol"><label for="c_${id}">${name}</label></td>
-      <td class="ccol"><select id="c_${id}" data-name="${name}" data-kind="carat">${caratOptions}</select></td>
-      <td class="ncol"><select id="n_${id}" data-name="${name}" data-kind="number">${numberOptions}</select></td>
-    `;
-    $tbody.appendChild(tr);
-  });
-
-  // Local state
-  let state = Object.fromEntries(PRODUCTS.map(p => [p, {carat:0, number:0}]));
-  let applyingRemote = false;
-
-  // Read/subscribe today's doc
-  const docRef = doc(db, 'stocks', dateKey);
-
-  async function ensureDoc() {
-    const snap = await getDoc(docRef);
-    if (!snap.exists()) {
-      await setDoc(docRef, { products: state, date: dateKey, createdAt: new Date() });
-    } else {
-      state = snap.data().products || state;
-    }
-    applyStateToUI();
-  }
-
-  function applyStateToUI(){
-    applyingRemote = true;
-    for (const name of PRODUCTS){
-      const id = slug(name);
-      const cSel = document.getElementById(`c_${id}`);
-      const nSel = document.getElementById(`n_${id}`);
-      const {carat, number} = state[name] || {carat:0, number:0};
-      if (cSel) cSel.value = String(carat);
-      if (nSel) nSel.value = String(number);
-    }
-    applyingRemote = false;
-  }
-
-  async function saveState(partial){
-    // જો ફક્ત એક જ વેલ્યુ બદલાઈ હોય (partial update)
-    if (partial) {
-      const updates = {};
-      for (const [name, obj] of Object.entries(partial)){
-        // લોકલ state અપડેટ કરો
-        state[name] = { ...state[name], ...obj };
-        // updateDoc માટે પાથ તૈયાર કરો
-        for (const [kind, value] of Object.entries(obj)){
-          updates[`products.${name}.${kind}`] = value;
-        }
+    function applyStateToUI(){
+      applyingRemote = true;
+      for (const name of PRODUCTS){
+        const id = name.replace(/\s+/g,'_').replace(/[^\p{L}\p{N}_-]/gu,'');
+        const cSel = document.getElementById(`c_${id}`);
+        const nSel = document.getElementById(`n_${id}`);
+        const {carat, number} = state[name] || {carat:0, number:0};
+        if (cSel) cSel.value = String(carat);
+        if (nSel) nSel.value = String(number);
       }
-      updates.updatedAt = new Date(); // અપડેટનો સમય ઉમેરો
-      await updateDoc(docRef, updates);
-    } 
-    // જો RESET કે SAVE બટનથી આખું state સેવ કરવાનું હોય
-    else {
-      await updateDoc(docRef, {
-        products: state,
-        updatedAt: new Date()
-      });
-    }
-    setStatus('સેવ થઈ ગયું ✅');
-  }
-
-  function setStatus(msg){ $status.textContent = msg; clearTimeout(setStatus._t); setStatus._t = setTimeout(()=>{ $status.textContent=''; }, 2500); }
-
-  // Change handlers (debounced)
-  let t;
-  $tbody.addEventListener('change', (e)=>{
-    if (!(e.target instanceof HTMLSelectElement)) return;
-    if (applyingRemote) return;
-    const el = e.target; const name = el.dataset.name; const kind = el.dataset.kind; const val = parseInt(el.value,10)||0;
-    const delta = { [name]: { [kind]: val } };
-    setStatus('સેવ થઈ રહ્યું છે…');
-    clearTimeout(t); t = setTimeout(()=> saveState(delta).catch(console.error), 200);
-  });
-
-  // Buttons
-  $save.addEventListener('click', ()=> saveState().catch(console.error));
-
-  $reset.addEventListener('click', async ()=>{
-    if (!confirm('આજે માટે બધું 00 કરવા RESET કરશો?')) return;
-    state = Object.fromEntries(PRODUCTS.map(p => [p, {carat:0, number:0}]));
-    applyStateToUI();
-    await saveState();
-  });
-
-  // Auth → subscribe
-  onAuthStateChanged(auth, async (user) => {
-    if (!user) {
-      try { await signInAnonymously(auth); } catch(e) { console.error("Anonymous sign-in failed", e); setStatus('ઓથેન્ટિકેશન નિષ્ફળ ❌'); }
-      return;
+      applyingRemote = false;
     }
 
-    // ખાતરી કરો કે ડોક્યુમેન્ટ અસ્તિત્વમાં છે
-    await ensureDoc(); 
-    setStatus('રીયલટાઇમ જોડાયેલ ✅');
+    async function saveState(partial){
+      if (partial) {
+        const updates = {};
+        for (const [name, obj] of Object.entries(partial)){
+          state[name] = { ...state[name], ...obj };
+          for (const [kind, value] of Object.entries(obj)){
+            updates[`products.${name}.${kind}`] = value;
+          }
+        }
+        updates.updatedAt = new Date();
+        await updateDoc(docRef, updates);
+      } else {
+        await updateDoc(docRef, { products: state, updatedAt: new Date() });
+      }
+      setStatus('સેવ થઈ ગયું ✅');
+    }
 
-    // હવે રીયલટાઇમ ફેરફારો માટે સાંભળો
-    let isFirstLoad = true;
-    onSnapshot(docRef, (snap) => {
-      if (!snap.exists()) {
-        console.warn("Document does not exist.");
+    function setStatus(msg){ $status.textContent = msg; clearTimeout(setStatus._t); setStatus._t = setTimeout(()=>{$status.textContent=''}, 2500); }
+
+    let t;
+    $tbody.addEventListener('change', (e) => {
+      if (!(e.target instanceof HTMLSelectElement) || applyingRemote) return;
+      const el = e.target;
+      const delta = { [el.dataset.name]: { [el.dataset.kind]: parseInt(el.value, 10) || 0 } };
+      setStatus('સેવ થઈ રહ્યું છે…');
+      clearTimeout(t);
+      t = setTimeout(() => saveState(delta).catch(console.error), 200);
+    });
+
+    document.getElementById('saveBtn').addEventListener('click', ()=> saveState().catch(console.error));
+    document.getElementById('resetBtn').addEventListener('click', async ()=>{
+      if (!confirm('આજે માટે બધું 00 કરવા RESET કરશો?')) return;
+      state = Object.fromEntries(PRODUCTS.map(p => [p, {carat:0, number:0}]));
+      applyStateToUI();
+      await saveState();
+    });
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        try { await signInAnonymously(auth); } catch(e) { console.error("Sign-in failed", e); setStatus('ઓથેન્ટિકેશન નિષ્ફળ ❌'); }
         return;
       }
       
-      const incomingProducts = snap.data().products || {};
-      st
+      const snap = await getDoc(docRef);
+      if (!snap.exists()) {
+        await setDoc(docRef, { products: state, date: dateKey, createdAt: new Date() });
+      } else {
+        state = snap.data().products || state;
+      }
+      applyStateToUI();
+      setStatus('રીયલટાઇમ જોડાયેલ ✅');
+
+      let isFirstLoad = true;
+      onSnapshot(docRef, (snap) => {
+        if (!snap.exists()) return;
+        state = snap.data().products || {};
+        applyStateToUI();
+        if (!isFirstLoad) setStatus('અપડેટ થયું 🔄');
+        isFirstLoad = false;
+      }, (error) => {
+        console.error("Snapshot error:", error);
+        setStatus('રીયલટાઇમ કનેક્શન તૂટ્યું ❌');
+      });
+    });
+  </script>
+</body>
+</html>
