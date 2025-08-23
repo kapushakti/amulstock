@@ -8,59 +8,71 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gujarati:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
+    /* ===== અહીંથી કોડ બદલેલ છે ===== */
     :root{
-      --bg:#0b1220; --card:#111a2b; --muted:#94a3b8; --accent:#22c55e; --danger:#ef4444; --text:#e2e8f0; --line:#1e293b;
+      /* નવી લાઈટ થીમ */
+      --bg:#f8fafc;       /* આખી એપ માટે આછો ગ્રે બેકગ્રાઉન્ડ */
+      --card:#ffffff;     /* કાર્ડ માટે સફેદ બેકગ્રાઉન્ડ */
+      --muted:#64748b;     /* હેડિંગ માટે ડાર્ક ગ્રે કલર */
+      --accent:#22c55e;     /* લીલો કલર (SAVE બટન) */
+      --danger:#ef4444;     /* લાલ કલર (RESET બટન અને મથાળું) */
+      --text:#1e293b;       /* મુખ્ય અક્ષરો માટે ડાર્ક કલર */
+      --line:#e2e8f0;       /* લાઈનો માટે આછો ગ્રે કલર */
     }
     *{box-sizing:border-box}
-    body{margin:0;font-family:"Noto Sans Gujarati",system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Noto Sans",sans-serif;background:var(--bg);color:var(--text)}
+    body{
+      margin:0;
+      font-family:"Noto Sans Gujarati",system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Noto Sans",sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      font-weight: 600; /* મોટાભાગના અક્ષરોને ઘાટા (Bold) કર્યા */
+    }
     .wrap{max-width:980px;margin:0 auto;padding:16px}
-    .card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:0 6px 30px rgba(0,0,0,.25)}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:0 6px 30px rgba(0,0,0,.1)}
     .header{padding:20px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px}
-    h1{font-size:20px;letter-spacing:.5px;margin:0}
+    h1{
+      font-size:20px;
+      letter-spacing:.5px;
+      margin:0;
+      color: var(--danger); /* મથાળાને લાલ કલર આપ્યો */
+      font-weight: 700;   /* મથાળાને વધુ ઘાટું કર્યું */
+    }
     .date{font-weight:600;color:var(--accent)}
     .controls{display:flex;gap:8px;flex-wrap:wrap}
     button{appearance:none;border:0;border-radius:12px;padding:10px 14px;font-weight:700;cursor:pointer}
-    .save{background:var(--accent);color:#052e14}
-    .reset{background:var(--danger);color:#2b0b0b}
+    .save{background:var(--accent);color:#ffffff} /* સેવ બટનના અક્ષર સફેદ કર્યા */
+    .reset{background:var(--danger);color:#ffffff} /* રીસેટ બટનના અક્ષર સફેદ કર્યા */
     .status{font-size:12px;color:var(--muted);margin-left:8px;min-height:18px}
     .table{width:100%;border-collapse:collapse}
     thead th{position:sticky;top:0;background:var(--card);z-index:2}
     th,td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left}
-    th{font-size:13px;color:#b6c2d9;text-transform:uppercase;letter-spacing:.06em}
+    th{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
     td label{display:block}
-    select{width:100%;background:#0b1629;color:#e2e8f0;border:1px solid #263247;padding:8px;border-radius:10px}
-    
-    /* ===== અહીંથી કોડ બદલેલ છે ===== */
+    select{
+      width:100%;
+      background: #f1f5f9; /* ડ્રોપડાઉનનો બેકગ્રાઉન્ડ બદલ્યો */
+      color: var(--text);   /* ડ્રોપડાઉનના અક્ષર ડાર્ક કર્યા */
+      border: 1px solid var(--line); /* ડ્રોપડાઉનની બોર્ડર બદલી */
+      padding:8px;
+      border-radius:10px;
+      font-weight: 600; /* ડ્રોપડાઉનના અક્ષર પણ ઘાટા કર્યા */
+    }
     .pcol { width: auto; }
     .ccol, .ncol { width: 100px; } 
 
-    /* મોબાઇલ સ્ક્રીન માટે ખાસ ફેરફાર */
     @media (max-width: 680px) {
-      .wrap { padding: 8px; } /* આખી એપની આસપાસની જગ્યા ઓછી કરી */
-      
-      .header { padding: 12px 10px; } /* હેડરનો ખાલી ભાગ ઓછો કર્યો */
-      h1 { font-size: 16px; } /* મથાળાને થોડું નાનું કર્યું */
-
-      /* ટેબલને કોમ્પેક્ટ બનાવવા માટે */
-      th, td { padding: 6px 8px; } /* ટેબલની દરેક લાઈનને પાતળી કરી */
+      .wrap { padding: 8px; }
+      .header { padding: 12px 10px; }
+      h1 { font-size: 16px; }
+      th, td { padding: 6px 8px; }
       th { font-size: 12px; }
-
-      /* ડ્રોપડાઉન બોક્સને નાના કર્યા */
-      select { 
-        padding: 5px; 
-        font-size: 14px;
-      }
-
-      /* બટનને નાના કર્યા */
+      select { padding: 5px; font-size: 14px; }
       button { padding: 8px 12px; }
-
-      /* ફૂટરની જગ્યા ઓછી કરી */
       .footer { padding: 8px 10px; font-size: 11px; }
     }
-    /* ===== અહીં કોડ પૂરો ===== */
-
     .footer{padding:10px 14px;color:var(--muted);font-size:12px}
-    .badge{display:inline-block;padding:2px 8px;border-radius:999px;background:#0f172a;border:1px solid #243045;color:#7aa2ff;margin-left:8px;font-size:11px}
+    .badge{display:inline-block;padding:2px 8px;border-radius:999px;background:#eef2ff;border:1px solid #dbeafe;color:#4338ca;margin-left:8px;font-size:11px}
+    /* ============================== */
   </style>
 </head>
 <body>
@@ -68,7 +80,7 @@
     <div class="card">
       <div class="header">
         <div>
-          <h1>SHREE SHAKTI AMUL STOCK <span class="badge"></span></h1>
+          <h1>SHREE SHAKTI AMUL STOCK <span class="badge">વેબ</span></h1>
           <div class="status" id="status">લોડ થઈ રહ્યું છે…</div>
         </div>
         <div style="text-align:right">
@@ -92,6 +104,7 @@
   </div>
 
   <div class="footer">
+    • ત્રણેય વ્યક્તિઓ માટે રિયલટાઇમ સિંક. • ઑફલાઇન સપોર્ટ. • બીજી તારીખે નવો સ્ટોક માટે RESET દબાવો.
   </div>
 </div>
 
@@ -252,25 +265,36 @@
   });
 
   // Auth → subscribe
-  onAuthStateChanged(auth, async (user)=>{
+  onAuthStateChanged(auth, async (user) => {
     if (!user) {
-      await signInAnonymously(auth);
+      try { await signInAnonymously(auth); } catch(e) { console.error("Anonymous sign-in failed", e); setStatus('ઓથેન્ટિકેશન નિષ્ફળ ❌'); }
       return;
     }
-    // Ensure doc and start realtime listener
-    await ensureDoc();
+
+    // ખાતરી કરો કે ડોક્યુમેન્ટ અસ્તિત્વમાં છે
+    await ensureDoc(); 
     setStatus('રીયલટાઇમ જોડાયેલ ✅');
 
-    onSnapshot(docRef, (snap)=>{
-      if (!snap.exists()) return;
-      const incoming = snap.data().products || {};
-      // If remote diff, apply
-      const changed = JSON.stringify(incoming) !== JSON.stringify(state);
-      if (changed){
-        state = incoming;
-        applyStateToUI();
+    // હવે રીયલટાઇમ ફેરફારો માટે સાંભળો
+    let isFirstLoad = true;
+    onSnapshot(docRef, (snap) => {
+      if (!snap.exists()) {
+        console.warn("Document does not exist.");
+        return;
+      }
+      
+      const incomingProducts = snap.data().products || {};
+      state = incomingProducts; // હંમેશા સર્વરમાંથી આવતા ડેટાને પ્રાધાન્ય આપો
+      applyStateToUI(); // UI ને નવા ડેટા સાથે અપડેટ કરો
+
+      if (isFirstLoad) {
+        isFirstLoad = false;
+      } else {
         setStatus('અપડેટ થયું 🔄');
       }
+    }, (error) => {
+      console.error("Snapshot listener error:", error);
+      setStatus('રીયલટાઇમ કનેક્શન તૂટ્યું ❌');
     });
   });
 </script></body>
