@@ -70,6 +70,31 @@
       button { padding: 8px 12px; }
     }
     .footer{padding:10px 14px;color:var(--muted);font-size:12px; border-top: 1px solid var(--line);}
+
+    /* નવા CSS નિયમો */
+    .title-group {
+      display: flex;
+      flex-direction: column;
+    }
+    .title-group h1 {
+      margin: 0;
+      font-size: 20px;
+      color: var(--text);
+      font-weight: 700;
+      line-height: 1.2;
+    }
+    .title-group h2 {
+      margin: 0;
+      font-size: 18px;
+      color: var(--danger);
+      font-weight: 700;
+      line-height: 1.2;
+    }
+    .save-reset-group {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
   </style>
 </head>
 <body>
@@ -77,13 +102,15 @@
     <div class="card">
       <div class="header">
         <div>
-          <h1>SHREE SHAKTI
-            AMUL STOCK</h1>
+          <div class="title-group">
+            <h1>SHREE SHAKTI</h1>
+            <h2>AMUL STOCK</h2>
+          </div>
           <div class="status" id="status">લોડ થઈ રહ્યું છે…</div>
         </div>
         <div style="text-align:right">
           <div class="date" id="dateLabel">તારીખ: --</div>
-          <div class="controls">
+          <div class="save-reset-group">
             <button class="save" id="saveBtn">SAVE</button>
             <button class="reset" id="resetBtn">RESET</button>
           </div>
